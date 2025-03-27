@@ -1,0 +1,40 @@
+services:
+  keycloakweb:
+    image: mykeycloak
+    restart: on-failure
+    ports:
+      - "9080:8080"
+      - "9443:8443"
+      - "9090:9000"
+    environment:
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      DB_VENDOR: postgres
+      DB_USER: root
+      DB_PASSWORD: electron
+      KC_DB_URL: "jdbc:postgresql://keycloakdb/keycloak"
+      KC_DB: postgres
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: electron
+      KC_HOSTNAME: "localhost"
+      KEYCLOAK_FRONTEND_URL: "https://localhost/auth"
+    networks:
+      - keycloak-net
+
+  keycloakdb:
+    image: postgres:latest
+    restart: on-failure
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: electron
+    ports:
+      - "9432:5432"
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    networks:
+      - keycloak-net
+
+networks:
+  keycloak-net:
+    driver: bridge
